@@ -3,6 +3,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const path = require("path");
 const crypto = require("crypto");
+const { Pool } = require("pg");
 
 const app = express();
 const server = http.createServer(app);
@@ -10,35 +11,55 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 10000;
 
-app.use(express.json());
 
-const publicFolder = path.join(__dirname, "public");
+/* ==========================================
+   DATABASE
+========================================== */
 
-app.use(express.static(publicFolder));
+if (!process.env.DATABASE_URL) {
+    console.error("❌ DATABASE_URL is missing!");
+}
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(publicFolder, "index.html"));
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 
 /* ==========================================
-   BANANA MARKET
+   WEBSITE
+========================================== */
+
+const publicFolder =
+    path.join(__dirname, "public");
+
+app.use(express.json());
+
+app.use(
+    express.static(publicFolder)
+);
+
+app.get("/", (req, res) => {
+
+    res.sendFile(
+        path.join(
+            publicFolder,
+            "index.html"
+        )
+    );
+
+});
+
+
+/* ==========================================
+   MARKET
 ========================================== */
 
 let price = 0.00004269;
 
 const STARTING_CASH = 10000;
-
-
-/* ==========================================
-   ACCOUNTS
-========================================== */
-
-const accounts = new Map();
-
-const sessions = new Map();
-
-const sockets = new Map();
 
 
 /* ==========================================
@@ -62,11 +83,6 @@ const ACHIEVEMENTS = {
         description: "Reach $1,000,000"
     },
 
-    diamondHands: {
-        name: "💎 Diamond Hands",
-        description: "Survive a 50% market crash"
-    },
-
     profit100: {
         name: "📈 To The Moon",
         description: "Make 100% profit"
@@ -81,7 +97,14 @@ const ACHIEVEMENTS = {
 
 
 /* ==========================================
-   PASSWORD HASHING
+   SESSIONS
+========================================== */
+
+const sessions = new Map();
+
+
+/* ==========================================
+   PASSWORD HASH
 ========================================== */
 
 function hashPassword(password) {
@@ -95,315 +118,497 @@ function hashPassword(password) {
 
 
 /* ==========================================
-   USERNAME VALIDATION
+   DATABASE SETUP
 ========================================== */
 
-function validUsername(username) {
+async function setupDatabase() {
 
-    return (
-        typeof username === "string" &&
-        /^[a-zA-Z0-9_]{3,20}$/.test(username)
+    await pool.query(`
+
+        CREATE TABLE IF NOT EXISTS users (
+
+            id SERIAL PRIMARY KEY,
+
+            username VARCHAR(20)
+                UNIQUE NOT NULL,
+
+            email VARCHAR(255)
+                NOT NULL,
+
+            password_hash TEXT
+                NOT NULL,
+
+            cash DOUBLE PRECISION
+                NOT NULL DEFAULT 10000,
+
+            bananas DOUBLE PRECISION
+                NOT NULL DEFAULT 0,
+
+            starting_portfolio DOUBLE PRECISION
+                NOT NULL DEFAULT 10000,
+
+            created_at TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
+
+        );
+
+    `);
+
+
+    await pool.query(`
+
+        CREATE TABLE IF NOT EXISTS achievements (
+
+            id SERIAL PRIMARY KEY,
+
+            user_id INTEGER
+                REFERENCES users(id)
+                ON DELETE CASCADE,
+
+            achievement VARCHAR(100)
+                NOT NULL,
+
+            unlocked_at TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            UNIQUE(
+                user_id,
+                achievement
+            )
+
+        );
+
+    `);
+
+
+    console.log(
+        "🍌 Database tables ready."
     );
 
 }
 
 
 /* ==========================================
-   ACCOUNT API
+   GET USER
 ========================================== */
 
-app.post("/api/register", (req, res) => {
+async function getUserByUsername(
+    username
+) {
 
-    const {
-        username,
-        email,
-        password
-    } = req.body;
+    const result =
+        await pool.query(
+            `
+            SELECT *
+            FROM users
+            WHERE LOWER(username) =
+                  LOWER($1)
+            `,
+            [username]
+        );
 
+    return result.rows[0] || null;
 
-    if (!validUsername(username)) {
-
-        return res.status(400).json({
-            error:
-                "Username must be 3-20 letters, numbers or underscores."
-        });
-
-    }
-
-
-    if (
-        typeof email !== "string" ||
-        email.length < 3
-    ) {
-
-        return res.status(400).json({
-            error: "Enter a fake email."
-        });
-
-    }
+}
 
 
-    if (
-        typeof password !== "string" ||
-        password.length < 4
-    ) {
+/* ==========================================
+   GET ACHIEVEMENTS
+========================================== */
 
-        return res.status(400).json({
-            error:
-                "Password must be at least 4 characters."
-        });
+async function getAchievements(
+    userId
+) {
 
-    }
-
-
-    const key =
-        username.toLowerCase();
-
-
-    if (accounts.has(key)) {
-
-        return res.status(400).json({
-            error:
-                "That username already exists."
-        });
-
-    }
+    const result =
+        await pool.query(
+            `
+            SELECT achievement
+            FROM achievements
+            WHERE user_id = $1
+            `,
+            [userId]
+        );
 
 
-    const account = {
-
-        username,
-
-        email,
-
-        passwordHash:
-            hashPassword(password),
-
-        cash:
-            STARTING_CASH,
-
-        bananas: 0,
-
-        startingPortfolio:
-            STARTING_CASH,
-
-        achievements: [],
-
-        createdAt:
-            Date.now()
-
-    };
-
-
-    accounts.set(
-        key,
-        account
+    return result.rows.map(
+        row => row.achievement
     );
 
-
-    const token =
-        crypto.randomBytes(32).toString("hex");
+}
 
 
-    sessions.set(
-        token,
-        key
-    );
+/* ==========================================
+   REGISTER
+========================================== */
+
+app.post(
+    "/api/register",
+    async (req, res) => {
+
+        try {
+
+            const {
+                username,
+                email,
+                password
+            } = req.body;
 
 
-    res.json({
+            if (
+                typeof username !== "string" ||
+                !/^[a-zA-Z0-9_]{3,20}$/.test(
+                    username
+                )
+            ) {
 
-        token,
+                return res.status(400).json({
+                    error:
+                        "Username must be 3-20 letters, numbers or underscores."
+                });
 
-        username:
+            }
 
-            account.username,
 
-        cash:
+            if (
+                typeof email !== "string" ||
+                email.length < 3
+            ) {
 
-            account.cash,
+                return res.status(400).json({
+                    error:
+                        "Enter a fake email."
+                });
 
-        bananas:
+            }
 
-            account.bananas,
 
-        achievements:
+            if (
+                typeof password !== "string" ||
+                password.length < 4
+            ) {
 
-            account.achievements
+                return res.status(400).json({
+                    error:
+                        "Password must be at least 4 characters."
+                });
 
-    });
+            }
 
-});
+
+            const existing =
+                await getUserByUsername(
+                    username
+                );
+
+
+            if (existing) {
+
+                return res.status(400).json({
+                    error:
+                        "That username already exists."
+                });
+
+            }
+
+
+            const passwordHash =
+                hashPassword(password);
+
+
+            const result =
+                await pool.query(
+                    `
+                    INSERT INTO users
+                    (
+                        username,
+                        email,
+                        password_hash
+                    )
+                    VALUES
+                    ($1, $2, $3)
+                    RETURNING *
+                    `,
+                    [
+                        username,
+                        email,
+                        passwordHash
+                    ]
+                );
+
+
+            const user =
+                result.rows[0];
+
+
+            const token =
+                crypto
+                    .randomBytes(32)
+                    .toString("hex");
+
+
+            sessions.set(
+                token,
+                user.id
+            );
+
+
+            res.json({
+
+                token,
+
+                username:
+                    user.username,
+
+                cash:
+                    user.cash,
+
+                bananas:
+                    user.bananas,
+
+                achievements: []
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "REGISTER ERROR:",
+                error
+            );
+
+
+            res.status(500).json({
+                error:
+                    "Database error."
+            });
+
+        }
+
+    }
+);
 
 
 /* ==========================================
    LOGIN
 ========================================== */
 
-app.post("/api/login", (req, res) => {
+app.post(
+    "/api/login",
+    async (req, res) => {
 
-    const {
-        username,
-        password
-    } = req.body;
+        try {
 
-
-    const key =
-        String(username || "")
-            .toLowerCase();
-
-
-    const account =
-        accounts.get(key);
+            const {
+                username,
+                password
+            } = req.body;
 
 
-    if (
-        !account ||
-        account.passwordHash !==
-        hashPassword(
-            String(password || "")
-        )
-    ) {
+            const user =
+                await getUserByUsername(
+                    String(username || "")
+                );
 
-        return res.status(401).json({
-            error:
-                "Wrong username or password."
-        });
+
+            if (
+                !user ||
+                user.password_hash !==
+                    hashPassword(
+                        String(password || "")
+                    )
+            ) {
+
+                return res.status(401).json({
+                    error:
+                        "Wrong username or password."
+                });
+
+            }
+
+
+            const token =
+                crypto
+                    .randomBytes(32)
+                    .toString("hex");
+
+
+            sessions.set(
+                token,
+                user.id
+            );
+
+
+            const achievements =
+                await getAchievements(
+                    user.id
+                );
+
+
+            res.json({
+
+                token,
+
+                username:
+                    user.username,
+
+                cash:
+                    user.cash,
+
+                bananas:
+                    user.bananas,
+
+                achievements
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "LOGIN ERROR:",
+                error
+            );
+
+
+            res.status(500).json({
+                error:
+                    "Database error."
+            });
+
+        }
 
     }
-
-
-    const token =
-        crypto.randomBytes(32).toString("hex");
-
-
-    sessions.set(
-        token,
-        key
-    );
-
-
-    res.json({
-
-        token,
-
-        username:
-            account.username,
-
-        cash:
-            account.cash,
-
-        bananas:
-            account.bananas,
-
-        achievements:
-            account.achievements
-
-    });
-
-});
+);
 
 
 /* ==========================================
-   LEADERBOARD API
+   GET USER FROM SOCKET
 ========================================== */
 
-app.get("/api/leaderboard", (req, res) => {
+async function getUserFromSocket(
+    socket
+) {
 
-    const leaderboard =
-        [...accounts.values()]
-            .map(account => {
-
-                const portfolio =
-                    account.cash +
-                    account.bananas * price;
-
-                return {
-
-                    username:
-                        account.username,
-
-                    portfolio,
-
-                    bananas:
-                        account.bananas,
-
-                    profit:
-                        portfolio -
-                        account.startingPortfolio,
-
-                    achievements:
-                        account.achievements.length
-
-                };
-
-            })
-            .sort(
-                (a, b) =>
-                    b.portfolio -
-                    a.portfolio
-            )
-            .slice(0, 50);
-
-
-    res.json(leaderboard);
-
-});
-
-
-/* ==========================================
-   GET ACCOUNT
-========================================== */
-
-function getAccount(socket) {
-
-    const token =
-        socket.userToken;
-
-    const key =
-        sessions.get(token);
-
-    if (!key)
+    if (!socket.userToken)
         return null;
 
-    return accounts.get(key);
+
+    const userId =
+        sessions.get(
+            socket.userToken
+        );
+
+
+    if (!userId)
+        return null;
+
+
+    const result =
+        await pool.query(
+            `
+            SELECT *
+            FROM users
+            WHERE id = $1
+            `,
+            [userId]
+        );
+
+
+    return result.rows[0] || null;
 
 }
 
 
 /* ==========================================
-   ACHIEVEMENT CHECK
+   SAVE USER
 ========================================== */
 
-function award(account, id) {
+async function saveUser(user) {
 
-    if (
-        account.achievements.includes(id)
-    ) {
-        return false;
-    }
+    await pool.query(
+        `
+        UPDATE users
 
+        SET
+            cash = $1,
+            bananas = $2
 
-    if (!ACHIEVEMENTS[id])
-        return false;
-
-
-    account.achievements.push(id);
-
-    return true;
+        WHERE id = $3
+        `,
+        [
+            user.cash,
+            user.bananas,
+            user.id
+        ]
+    );
 
 }
 
 
-function checkAchievements(account) {
+/* ==========================================
+   AWARD ACHIEVEMENT
+========================================== */
+
+async function award(
+    userId,
+    achievementId
+) {
+
+    if (!ACHIEVEMENTS[achievementId])
+        return false;
+
+
+    const result =
+        await pool.query(
+            `
+            INSERT INTO achievements
+            (
+                user_id,
+                achievement
+            )
+
+            VALUES
+            ($1, $2)
+
+            ON CONFLICT
+            (
+                user_id,
+                achievement
+            )
+
+            DO NOTHING
+
+            RETURNING achievement
+            `,
+            [
+                userId,
+                achievementId
+            ]
+        );
+
+
+    return result.rowCount > 0;
+
+}
+
+
+/* ==========================================
+   CHECK ACHIEVEMENTS
+========================================== */
+
+async function checkAchievements(
+    user
+) {
 
     const unlocked = [];
 
 
     if (
-        account.bananas > 0 &&
-        award(
-            account,
+        user.bananas > 0 &&
+        await award(
+            user.id,
             "firstBanana"
         )
     ) {
@@ -416,9 +621,9 @@ function checkAchievements(account) {
 
 
     if (
-        account.bananas >= 1000000 &&
-        award(
-            account,
+        user.bananas >= 1000000 &&
+        await award(
+            user.id,
             "bananaWhale"
         )
     ) {
@@ -431,14 +636,14 @@ function checkAchievements(account) {
 
 
     const portfolio =
-        account.cash +
-        account.bananas * price;
+        user.cash +
+        user.bananas * price;
 
 
     if (
         portfolio >= 1000000 &&
-        award(
-            account,
+        await award(
+            user.id,
             "millionaire"
         )
     ) {
@@ -452,9 +657,9 @@ function checkAchievements(account) {
 
     if (
         portfolio >=
-        account.startingPortfolio * 2 &&
-        award(
-            account,
+            user.starting_portfolio * 2 &&
+        await award(
+            user.id,
             "profit100"
         )
     ) {
@@ -468,9 +673,9 @@ function checkAchievements(account) {
 
     if (
         portfolio <=
-        account.startingPortfolio * 0.5 &&
-        award(
-            account,
+            user.starting_portfolio * 0.5 &&
+        await award(
+            user.id,
             "financialDisaster"
         )
     ) {
@@ -488,8 +693,12 @@ function checkAchievements(account) {
 
 
 /* ==========================================
-   BROADCAST
+   ONLINE PLAYERS
 ========================================== */
+
+const onlineSockets =
+    new Set();
+
 
 function broadcast(data) {
 
@@ -505,7 +714,9 @@ function broadcast(data) {
                 WebSocket.OPEN
             ) {
 
-                client.send(message);
+                client.send(
+                    message
+                );
 
             }
 
@@ -519,22 +730,20 @@ function broadcast(data) {
    SEND PORTFOLIO
 ========================================== */
 
-function sendPortfolio(
+async function sendPortfolio(
     socket,
-    account
+    user
 ) {
 
-    if (
-        socket.readyState !==
-        WebSocket.OPEN
-    ) {
-        return;
-    }
+    const achievements =
+        await getAchievements(
+            user.id
+        );
 
 
     const portfolio =
-        account.cash +
-        account.bananas * price;
+        user.cash +
+        user.bananas * price;
 
 
     socket.send(
@@ -544,23 +753,127 @@ function sendPortfolio(
                 "portfolio",
 
             username:
-                account.username,
+                user.username,
 
             cash:
-                account.cash,
+                user.cash,
 
             bananas:
-                account.bananas,
+                user.bananas,
 
             portfolio,
 
-            achievements:
-                account.achievements
+            achievements
 
         })
     );
 
 }
+
+
+/* ==========================================
+   LEADERBOARD
+========================================== */
+
+async function getLeaderboard() {
+
+    const result =
+        await pool.query(
+            `
+            SELECT
+                username,
+                cash,
+                bananas,
+                starting_portfolio
+
+            FROM users
+            `
+        );
+
+
+    const leaderboard =
+        result.rows
+            .map(user => {
+
+                const portfolio =
+                    user.cash +
+                    user.bananas *
+                    price;
+
+
+                return {
+
+                    username:
+                        user.username,
+
+                    portfolio,
+
+                    bananas:
+                        user.bananas,
+
+                    profit:
+                        portfolio -
+                        user.starting_portfolio
+
+                };
+
+            })
+            .sort(
+                (a, b) =>
+                    b.portfolio -
+                    a.portfolio
+            )
+            .slice(0, 50);
+
+
+    return leaderboard;
+
+}
+
+
+async function broadcastLeaderboard() {
+
+    const leaderboard =
+        await getLeaderboard();
+
+
+    broadcast({
+
+        type:
+            "leaderboard",
+
+        leaderboard
+
+    });
+
+}
+
+
+/* ==========================================
+   LEADERBOARD API
+========================================== */
+
+app.get(
+    "/api/leaderboard",
+    async (req, res) => {
+
+        try {
+
+            res.json(
+                await getLeaderboard()
+            );
+
+        } catch {
+
+            res.status(500).json({
+                error:
+                    "Database error."
+            });
+
+        }
+
+    }
+);
 
 
 /* ==========================================
@@ -570,6 +883,11 @@ function sendPortfolio(
 wss.on(
     "connection",
     socket => {
+
+        onlineSockets.add(
+            socket
+        );
+
 
         socket.send(
             JSON.stringify({
@@ -583,9 +901,20 @@ wss.on(
         );
 
 
+        broadcast({
+
+            type:
+                "players",
+
+            count:
+                onlineSockets.size
+
+        });
+
+
         socket.on(
             "message",
-            raw => {
+            async raw => {
 
                 let data;
 
@@ -605,7 +934,7 @@ wss.on(
 
 
                 /* =========================
-                   LOGIN TOKEN
+                   AUTHENTICATE
                 ========================= */
 
                 if (
@@ -621,10 +950,13 @@ wss.on(
 
                         socket.send(
                             JSON.stringify({
+
                                 type:
                                     "error",
+
                                 message:
                                     "Invalid login."
+
                             })
                         );
 
@@ -637,28 +969,23 @@ wss.on(
                         data.token;
 
 
-                    const account =
-                        getAccount(socket);
+                    const user =
+                        await getUserFromSocket(
+                            socket
+                        );
 
 
-                    sockets.set(
-                        account.username,
-                        socket
-                    );
+                    if (!user)
+                        return;
 
 
-                    sendPortfolio(
+                    await sendPortfolio(
                         socket,
-                        account
+                        user
                     );
 
 
-                    broadcast({
-                        type:
-                            "players",
-                        count:
-                            sockets.size
-                    });
+                    await broadcastLeaderboard();
 
                 }
 
@@ -672,11 +999,13 @@ wss.on(
                     "buy"
                 ) {
 
-                    const account =
-                        getAccount(socket);
+                    const user =
+                        await getUserFromSocket(
+                            socket
+                        );
 
 
-                    if (!account)
+                    if (!user)
                         return;
 
 
@@ -692,17 +1021,20 @@ wss.on(
                         ) ||
                         amount <= 0
                     ) {
+
                         return;
+
                     }
 
 
                     const cost =
-                        amount * price;
+                        amount *
+                        price;
 
 
                     if (
                         cost >
-                        account.cash
+                        user.cash
                     ) {
 
                         socket.send(
@@ -722,16 +1054,21 @@ wss.on(
                     }
 
 
-                    account.cash -=
+                    user.cash -=
                         cost;
 
-                    account.bananas +=
+                    user.bananas +=
                         amount;
 
 
+                    await saveUser(
+                        user
+                    );
+
+
                     const unlocked =
-                        checkAchievements(
-                            account
+                        await checkAchievements(
+                            user
                         );
 
 
@@ -742,7 +1079,7 @@ wss.on(
 
                         message:
                             "🟢 " +
-                            account.username +
+                            user.username +
                             " bought " +
                             Math.floor(
                                 amount
@@ -752,31 +1089,32 @@ wss.on(
                     });
 
 
-                    unlocked.forEach(
-                        achievement => {
+                    for (
+                        const achievement
+                        of unlocked
+                    ) {
 
-                            socket.send(
-                                JSON.stringify({
+                        socket.send(
+                            JSON.stringify({
 
-                                    type:
-                                        "achievement",
+                                type:
+                                    "achievement",
 
-                                    achievement
+                                achievement
 
-                                })
-                            );
+                            })
+                        );
 
-                        }
-                    );
+                    }
 
 
-                    sendPortfolio(
+                    await sendPortfolio(
                         socket,
-                        account
+                        user
                     );
 
 
-                    broadcastLeaderboard();
+                    await broadcastLeaderboard();
 
                 }
 
@@ -790,11 +1128,13 @@ wss.on(
                     "sell"
                 ) {
 
-                    const account =
-                        getAccount(socket);
+                    const user =
+                        await getUserFromSocket(
+                            socket
+                        );
 
 
-                    if (!account)
+                    if (!user)
                         return;
 
 
@@ -810,13 +1150,15 @@ wss.on(
                         ) ||
                         amount <= 0
                     ) {
+
                         return;
+
                     }
 
 
                     if (
                         amount >
-                        account.bananas
+                        user.bananas
                     ) {
 
                         socket.send(
@@ -836,16 +1178,22 @@ wss.on(
                     }
 
 
-                    account.bananas -=
+                    user.bananas -=
                         amount;
 
-                    account.cash +=
-                        amount * price;
+                    user.cash +=
+                        amount *
+                        price;
+
+
+                    await saveUser(
+                        user
+                    );
 
 
                     const unlocked =
-                        checkAchievements(
-                            account
+                        await checkAchievements(
+                            user
                         );
 
 
@@ -856,7 +1204,7 @@ wss.on(
 
                         message:
                             "🔴 " +
-                            account.username +
+                            user.username +
                             " sold " +
                             Math.floor(
                                 amount
@@ -866,31 +1214,32 @@ wss.on(
                     });
 
 
-                    unlocked.forEach(
-                        achievement => {
+                    for (
+                        const achievement
+                        of unlocked
+                    ) {
 
-                            socket.send(
-                                JSON.stringify({
+                        socket.send(
+                            JSON.stringify({
 
-                                    type:
-                                        "achievement",
+                                type:
+                                    "achievement",
 
-                                    achievement
+                                achievement
 
-                                })
-                            );
+                            })
+                        );
 
-                        }
-                    );
+                    }
 
 
-                    sendPortfolio(
+                    await sendPortfolio(
                         socket,
-                        account
+                        user
                     );
 
 
-                    broadcastLeaderboard();
+                    await broadcastLeaderboard();
 
                 }
 
@@ -902,30 +1251,9 @@ wss.on(
             "close",
             () => {
 
-                if (
-                    socket.userToken
-                ) {
-
-                    const account =
-                        getAccount(
-                            socket
-                        );
-
-
-                    if (
-                        account &&
-                        sockets.get(
-                            account.username
-                        ) === socket
-                    ) {
-
-                        sockets.delete(
-                            account.username
-                        );
-
-                    }
-
-                }
+                onlineSockets.delete(
+                    socket
+                );
 
 
                 broadcast({
@@ -934,7 +1262,7 @@ wss.on(
                         "players",
 
                     count:
-                        sockets.size
+                        onlineSockets.size
 
                 });
 
@@ -946,15 +1274,17 @@ wss.on(
 
 
 /* ==========================================
-   MARKET
+   MARKET TICK
 ========================================== */
 
 setInterval(
-    () => {
+    async () => {
 
         const movement =
-            (Math.random() - 0.48)
-            * 0.045;
+            (
+                Math.random() -
+                0.48
+            ) * 0.045;
 
 
         price *=
@@ -978,38 +1308,7 @@ setInterval(
         });
 
 
-        /*
-           Update portfolios and
-           achievements.
-        */
-
-        for (
-            const account
-            of accounts.values()
-        ) {
-
-            const portfolio =
-                account.cash +
-                account.bananas *
-                price;
-
-
-            if (
-                portfolio >=
-                account.startingPortfolio * 2
-            ) {
-
-                award(
-                    account,
-                    "profit100"
-                );
-
-            }
-
-        }
-
-
-        broadcastLeaderboard();
+        await broadcastLeaderboard();
 
     },
     900
@@ -1017,79 +1316,41 @@ setInterval(
 
 
 /* ==========================================
-   LEADERBOARD BROADCAST
+   START
 ========================================== */
 
-function broadcastLeaderboard() {
+async function start() {
 
-    const leaderboard =
-        [...accounts.values()]
-            .map(account => {
+    try {
 
-                const portfolio =
-                    account.cash +
-                    account.bananas *
-                    price;
+        await setupDatabase();
 
 
-                return {
+        server.listen(
+            PORT,
+            "0.0.0.0",
+            () => {
 
-                    username:
-                        account.username,
+                console.log(
+                    "🍌 Banana Coin server running on port " +
+                    PORT
+                );
 
-                    portfolio,
+            }
+        );
 
-                    bananas:
-                        account.bananas,
+    } catch (error) {
 
-                    profit:
-                        portfolio -
-                        account.startingPortfolio,
+        console.error(
+            "❌ Failed to start:",
+            error
+        );
 
-                    achievements:
-                        account.achievements.length
+        process.exit(1);
 
-                };
-
-            })
-            .sort(
-                (a, b) =>
-                    b.portfolio -
-                    a.portfolio
-            )
-            .slice(0, 50);
-
-
-    broadcast({
-
-        type:
-            "leaderboard",
-
-        leaderboard
-
-    });
+    }
 
 }
 
 
-/* ==========================================
-   SERVER
-========================================== */
-
-server.listen(
-    PORT,
-    "0.0.0.0",
-    () => {
-
-        console.log(
-            "🍌 Banana Coin server running on port " +
-            PORT
-        );
-
-        console.log(
-            "📁 Website folder: " +
-            publicFolder
-        );
-
-    }
-);
+start();
