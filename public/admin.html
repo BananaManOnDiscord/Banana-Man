@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🍌 Banana Coin Admin</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #080a0f;
+    color: #f2f4f8;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: min(1200px, 94vw);
+    margin: auto;
+    padding: 30px 0 50px;
+}
+
+.login,
+.panel {
+    background: #12151c;
+    border: 1px solid #292f3b;
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.login {
+    max-width: 450px;
+    margin: 80px auto;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    margin: 7px 0 12px;
+    border-radius: 8px;
+    border: 1px solid #303746;
+    background: #171b24;
+    color: white;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 15px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    margin: 4px;
+}
+
+button:hover {
+    filter: brightness(1.15);
+}
+
+.primary {
+    background: #9b6b00;
+}
+
+.green {
+    background: #238636;
+}
+
+.red {
+    background: #c93c3c;
+}
+
+.gray {
+    background: #303744;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.stat {
+    background: #0d1016;
+    border: 1px solid #252a35;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.label {
+    color: #8d95a5;
+    font-size: 12px;
+}
+
+.value {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #252a35;
+}
+
+th {
+    color: #8d95a5;
+}
+
+.hidden {
+    display: none;
+}
+
+.message {
+    margin-top: 12px;
+    color: #ffcc66;
+}
+
+@media(max-width:750px) {
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+
+<div id="loginBox" class="login">
+
+<h1>👑 Banana Admin</h1>
+
+<p>
+Authorized Banana Coin administration only.
+</p>
+
+<input
+    id="username"
+    placeholder="Admin username"
+>
+
+<input
+    id="password"
+    type="password"
+    placeholder="Admin password"
+>
+
+<button
+    class="primary"
+    onclick="login()"
+>
+LOGIN
+</button>
+
+<div
+    id="loginMessage"
+    class="message"
+></div>
+
+</div>
+
+
+<!-- PANEL -->
+
+<div
+    id="adminPanel"
+    class="hidden"
+>
+
+<h1>🍌 Banana Coin Admin Panel</h1>
+
+<button
+    class="red"
+    onclick="logout()"
+>
+LOG OUT
+</button>
+
+
+<!-- STATS -->
+
+<div class="panel">
+
+<h2>📊 Server</h2>
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="label">
+BANANA Price
+</div>
+
+<div
+    class="value"
+    id="price"
+>
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+Online Players
+</div>
+
+<div
+    class="value"
+    id="players"
+>
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+Registered Accounts
+</div>
+
+<div
+    class="value"
+    id="accounts"
+>
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+Database
+</div>
+
+<div
+    class="value"
+    id="database"
+>
+—
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MARKET -->
+
+<div class="panel">
+
+<h2>📈 Market Controls</h2>
+
+<label>
+Set BANANA price
+</label>
+
+<input
+    id="newPrice"
+    type="number"
+    step="0.00000001"
+    placeholder="0.00004269"
+>
+
+<button
+    class="primary"
+    onclick="setPrice()"
+>
+SET PRICE
+</button>
+
+<br>
+
+<button
+    class="green"
+    onclick="marketEvent('pump')"
+>
+📈 PUMP
+</button>
+
+<button
+    class="red"
+    onclick="marketEvent('crash')"
+>
+📉 CRASH
+</button>
+
+</div>
+
+
+<!-- NEWS -->
+
+<div class="panel">
+
+<h2>📰 Send Market News</h2>
+
+<input
+    id="news"
+    placeholder="Breaking Banana News..."
+>
+
+<button
+    class="primary"
+    onclick="sendNews()"
+>
+SEND NEWS
+</button>
+
+</div>
+
+
+<!-- PLAYER -->
+
+<div class="panel">
+
+<h2>👤 Player Management</h2>
+
+<input
+    id="playerName"
+    placeholder="Username"
+>
+
+<input
+    id="cashAmount"
+    type="number"
+    placeholder="Fake cash amount"
+>
+
+<button
+    class="green"
+    onclick="modifyPlayer('cash', 'add')"
+>
+💰 GIVE CASH
+</button>
+
+<button
+    class="red"
+    onclick="modifyPlayer('cash', 'remove')"
+>
+💸 REMOVE CASH
+</button>
+
+
+<input
+    id="bananaAmount"
+    type="number"
+    placeholder="BANANA amount"
+>
+
+<button
+    class="green"
+    onclick="modifyPlayer('banana', 'add')"
+>
+🍌 GIVE BANANA
+</button>
+
+<button
+    class="red"
+    onclick="modifyPlayer('banana', 'remove')"
+>
+🍌 REMOVE BANANA
+</button>
+
+</div>
+
+
+<!-- LEADERBOARD -->
+
+<div class="panel">
+
+<h2>🏆 Leaderboard</h2>
+
+<button
+    class="gray"
+    onclick="loadLeaderboard()"
+>
+REFRESH
+</button>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>#</th>
+<th>Username</th>
+<th>BANANA</th>
+<th>Portfolio</th>
+<th>Profit</th>
+
+</tr>
+
+</thead>
+
+<tbody id="leaderboard">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let adminToken =
+localStorage.getItem(
+    "bananaAdminToken"
+);
+
+
+/* ==========================================
+   API
+========================================== */
+
+async function api(
+    url,
+    options = {}
+) {
+
+    options.headers = {
+
+        "Content-Type":
+            "application/json",
+
+        "Authorization":
+            "Bearer " +
+            adminToken,
+
+        ...(options.headers || {})
+
+    };
+
+
+    const response =
+        await fetch(
+            url,
+            options
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.error ||
+            "Request failed"
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+async function login() {
+
+    const username =
+        document.getElementById(
+            "username"
+        ).value;
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    try {
+
+        const data =
+            await fetch(
+                "/api/admin/login",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            username,
+                            password
+                        })
+
+                }
+            );
+
+
+        const result =
+            await data.json();
+
+
+        if (!data.ok)
+            throw new Error(
+                result.error
+            );
+
+
+        adminToken =
+            result.token;
+
+
+        localStorage.setItem(
+            "bananaAdminToken",
+            adminToken
+        );
+
+
+        showPanel();
+
+
+    } catch(error) {
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent =
+            error.message;
+
+    }
+
+}
+
+
+/* ==========================================
+   SHOW PANEL
+========================================== */
+
+function showPanel() {
+
+    document.getElementById(
+        "loginBox"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "adminPanel"
+    ).classList.remove(
+        "hidden"
+    );
+
+
+    loadDashboard();
+
+}
+
+
+/* ==========================================
+   LOGOUT
+========================================== */
+
+function logout() {
+
+    localStorage.removeItem(
+        "bananaAdminToken"
+    );
+
+    adminToken = null;
+
+    location.reload();
+
+}
+
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
+async function loadDashboard() {
+
+    try {
+
+        const data =
+            await api(
+                "/api/admin/dashboard"
+            );
+
+
+        document.getElementById(
+            "price"
+        ).textContent =
+            "$" +
+            Number(
+                data.price
+            ).toFixed(8);
+
+
+        document.getElementById(
+            "players"
+        ).textContent =
+            data.onlinePlayers;
+
+
+        document.getElementById(
+            "accounts"
+        ).textContent =
+            data.accounts;
+
+
+        document.getElementById(
+            "database"
+        ).textContent =
+            data.database
+                ? "ONLINE"
+                : "OFFLINE";
+
+
+        loadLeaderboard();
+
+
+    } catch {
+
+        logout();
+
+    }
+
+}
+
+
+/* ==========================================
+   PRICE
+========================================== */
+
+async function setPrice() {
+
+    const price =
+        Number(
+            document.getElementById(
+                "newPrice"
+            ).value
+        );
+
+
+    if (
+        !Number.isFinite(price) ||
+        price <= 0
+    )
+        return;
+
+
+    try {
+
+        await api(
+            "/api/admin/price",
+            {
+
+                method: "POST",
+
+                body:
+                    JSON.stringify({
+                        price
+                    })
+
+            }
+        );
+
+
+        alert(
+            "🍌 Price updated!"
+        );
+
+
+        loadDashboard();
+
+
+    } catch(error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ==========================================
+   MARKET EVENT
+========================================== */
+
+async function marketEvent(
+    event
+) {
+
+    try {
+
+        await api(
+            "/api/admin/event",
+            {
+
+                method: "POST",
+
+                body:
+                    JSON.stringify({
+                        event
+                    })
+
+            }
+        );
+
+
+        loadDashboard();
+
+
+    } catch(error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ==========================================
+   NEWS
+========================================== */
+
+async function sendNews() {
+
+    const message =
+        document.getElementById(
+            "news"
+        ).value;
+
+
+    if (!message)
+        return;
+
+
+    try {
+
+        await api(
+            "/api/admin/news",
+            {
+
+                method: "POST",
+
+                body:
+                    JSON.stringify({
+                        message
+                    })
+
+            }
+        );
+
+
+        document.getElementById(
+            "news"
+        ).value = "";
+
+
+        alert(
+            "📰 News sent!"
+        );
+
+
+    } catch(error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ==========================================
+   PLAYER MODIFICATION
+========================================== */
+
+async function modifyPlayer(
+    type,
+    action
+) {
+
+    const username =
+        document.getElementById(
+            "playerName"
+        ).value;
+
+
+    const amount =
+        Number(
+            type === "cash"
+
+            ? document.getElementById(
+                "cashAmount"
+            ).value
+
+            : document.getElementById(
+                "bananaAmount"
+            ).value
+        );
+
+
+    if (
+        !username ||
+        !Number.isFinite(amount) ||
+        amount <= 0
+    )
+        return;
+
+
+    try {
+
+        await api(
+            "/api/admin/player",
+            {
+
+                method: "POST",
+
+                body:
+                    JSON.stringify({
+
+                        username,
+
+                        type,
+
+                        action,
+
+                        amount
+
+                    })
+
+            }
+        );
+
+
+        alert(
+            "Player updated!"
+        );
+
+
+        loadLeaderboard();
+
+
+    } catch(error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ==========================================
+   LEADERBOARD
+========================================== */
+
+async function loadLeaderboard() {
+
+    try {
+
+        const data =
+            await api(
+                "/api/admin/leaderboard"
+            );
+
+
+        const table =
+            document.getElementById(
+                "leaderboard"
+            );
+
+
+        table.innerHTML = "";
+
+
+        data.forEach(
+            (player, index) => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            player.username
+                        )}
+                    </td>
+
+                    <td>
+                        ${Math.floor(
+                            player.bananas
+                        ).toLocaleString()}
+                    </td>
+
+                    <td>
+                        $${player.portfolio.toFixed(2)}
+                    </td>
+
+                    <td>
+                        $${player.profit.toFixed(2)}
+                    </td>
+
+                `;
+
+
+                table.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+    } catch(error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* ==========================================
+   SAFE HTML
+========================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* ==========================================
+   START
+========================================== */
+
+if (adminToken) {
+
+    showPanel();
+
+}
+
+</script>
+
+</body>
+</html>
