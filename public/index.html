@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🍌 Banana Coin Exchange</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #080a0f;
+    color: #f2f4f8;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    width: min(1200px, 94vw);
+    margin: auto;
+    padding: 25px 0 40px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 38px;
+}
+
+.ticker {
+    color: #8d95a5;
+    margin-top: 5px;
+}
+
+.price-box {
+    text-align: right;
+}
+
+#price {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+#change {
+    font-weight: bold;
+}
+
+.card {
+    background: #12151c;
+    border: 1px solid #272c37;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+canvas {
+    width: 100%;
+    height: 500px;
+    display: block;
+    background: #0d1016;
+    border-radius: 12px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.stat {
+    background: #0d1016;
+    border: 1px solid #252a35;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.label {
+    color: #8d95a5;
+    font-size: 12px;
+}
+
+.value {
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.big {
+    font-size: 22px;
+}
+
+.trade {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.trade-box {
+    background: #0d1016;
+    border: 1px solid #252a35;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: #171b24;
+    border: 1px solid #303746;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 5px;
+}
+
+button:hover {
+    filter: brightness(1.15);
+}
+
+.buy {
+    background: #238636;
+}
+
+.sell {
+    background: #c93c3c;
+}
+
+.event {
+    background: #9b6b00;
+}
+
+.quick {
+    display: flex;
+    gap: 6px;
+}
+
+.quick button {
+    background: #252b36;
+    font-size: 12px;
+}
+
+.news {
+    max-height: 220px;
+    overflow: hidden;
+}
+
+.news-item {
+    padding: 9px;
+    border-bottom: 1px solid #222733;
+    font-size: 14px;
+}
+
+.warning {
+    text-align: center;
+    color: #737b8b;
+    font-size: 12px;
+    margin-top: 15px;
+}
+
+#players {
+    color: #72e08b;
+    font-weight: bold;
+}
+
+@media(max-width:750px) {
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .price-box {
+        text-align: left;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .trade {
+        grid-template-columns: 1fr;
+    }
+
+    canvas {
+        height: 400px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div>
+
+<h1>🍌 Banana Coin</h1>
+
+<div class="ticker">
+BANANA • FICTIONAL CENTRALIZED MARKET
+</div>
+
+</div>
+
+<div class="price-box">
+
+<div id="price">
+$0.00004269
+</div>
+
+<div id="change">
++0.00%
+</div>
+
+</div>
+
+</header>
+
+
+<div class="card">
+
+<canvas id="chart"></canvas>
+
+<div class="grid">
+
+<div class="stat">
+
+<div class="label">
+Market Cap
+</div>
+
+<div class="value" id="marketCap">
+$42.69M
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+24h High
+</div>
+
+<div class="value" id="high">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+24h Low
+</div>
+
+<div class="value" id="low">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+Online Traders
+</div>
+
+<div class="value" id="players">
+1
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>💼 Your Portfolio</h2>
+
+<div class="grid">
+
+<div class="stat">
+
+<div class="label">
+Fake Cash
+</div>
+
+<div class="value big" id="cash">
+$10,000.00
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+BANANA Owned
+</div>
+
+<div class="value big" id="banana">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+Portfolio Value
+</div>
+
+<div class="value big" id="portfolio">
+$10,000.00
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="label">
+Profit / Loss
+</div>
+
+<div class="value big" id="profit">
+$0.00
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>💱 Trade BANANA</h2>
+
+<div class="trade">
+
+
+<div class="trade-box">
+
+<h2>🟢 Buy</h2>
+
+<input
+id="buyAmount"
+type="number"
+min="0"
+placeholder="Amount of BANANA"
+>
+
+<div class="quick">
+
+<button onclick="setBuy(.25)">
+25%
+</button>
+
+<button onclick="setBuy(.5)">
+50%
+</button>
+
+<button onclick="setBuy(1)">
+MAX
+</button>
+
+</div>
+
+<button
+class="buy"
+onclick="buyBanana()"
+>
+BUY BANANA
+</button>
+
+</div>
+
+
+<div class="trade-box">
+
+<h2>🔴 Sell</h2>
+
+<input
+id="sellAmount"
+type="number"
+min="0"
+placeholder="Amount of BANANA"
+>
+
+<div class="quick">
+
+<button onclick="setSell(.25)">
+25%
+</button>
+
+<button onclick="setSell(.5)">
+50%
+</button>
+
+<button onclick="setSell(1)">
+MAX
+</button>
+
+</div>
+
+<button
+class="sell"
+onclick="sellBanana()"
+>
+SELL BANANA
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>📰 Banana News</h2>
+
+<div
+id="news"
+class="news"
+></div>
+
+</div>
+
+
+<div class="warning">
+
+⚠️ Completely fictional market.
+No real cryptocurrency or money is involved.
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   CONNECT TO SERVER
+========================================== */
+
+const protocol =
+location.protocol === "https:"
+? "wss:"
+: "ws:";
+
+const socket =
+new WebSocket(
+protocol + "//" + location.host
+);
+
+
+/* ==========================================
+   MARKET DATA
+========================================== */
+
+let price = 0.00004269;
+
+let startingPrice = price;
+
+let history = [];
+
+
+/* ==========================================
+   PLAYER DATA
+========================================== */
+
+let cash = 10000;
+
+let bananas = 0;
+
+
+/* ==========================================
+   SOCKET
+========================================== */
+
+socket.onopen = () => {
+
+addNews(
+"🟢 Connected to Banana Coin server."
+);
+
+};
+
+
+socket.onclose = () => {
+
+addNews(
+"🔴 Disconnected from Banana Coin server."
+);
+
+};
+
+
+socket.onerror = () => {
+
+addNews(
+"⚠️ Server connection error."
+);
+
+};
+
+
+socket.onmessage = event => {
+
+const data =
+JSON.parse(event.data);
+
+
+if(data.type === "welcome") {
+
+price = data.price;
+
+startingPrice = price;
+
+cash = data.cash;
+
+bananas = data.bananas;
+
+}
+
+
+if(data.type === "market") {
+
+price = data.price;
+
+history.push(price);
+
+if(history.length > 150)
+history.shift();
+
+}
+
+
+if(data.type === "portfolio") {
+
+cash = data.cash;
+
+bananas = data.bananas;
+
+}
+
+
+if(data.type === "players") {
+
+document.getElementById(
+"players"
+).textContent =
+data.count;
+
+}
+
+
+if(data.type === "trade") {
+
+addNews(data.message);
+
+}
+
+
+if(data.type === "event") {
+
+addNews(data.message);
+
+}
+
+
+if(data.type === "error") {
+
+alert(data.message);
+
+}
+
+
+updateUI();
+
+draw();
+
+};
+
+
+/* ==========================================
+   FORMAT
+========================================== */
+
+function money(value) {
+
+return "$" +
+value.toLocaleString(
+"en-US",
+{
+minimumFractionDigits: 2,
+maximumFractionDigits: 2
+}
+);
+
+}
+
+
+function priceFormat(value) {
+
+return "$" +
+value.toFixed(8);
+
+}
+
+
+/* ==========================================
+   UI
+========================================== */
+
+function updateUI() {
+
+document.getElementById(
+"price"
+).textContent =
+priceFormat(price);
+
+
+const change =
+(price / startingPrice - 1)
+* 100;
+
+
+const changeEl =
+document.getElementById(
+"change"
+);
+
+
+changeEl.textContent =
+(change >= 0 ? "+" : "") +
+change.toFixed(2) +
+"%";
+
+
+changeEl.style.color =
+change >= 0
+? "#72e08b"
+: "#ff6b6b";
+
+
+if(history.length) {
+
+const high =
+Math.max(...history);
+
+const low =
+Math.min(...history);
+
+
+document.getElementById(
+"high"
+).textContent =
+priceFormat(high);
+
+
+document.getElementById(
+"low"
+).textContent =
+priceFormat(low);
+
+}
+
+
+const cap =
+price * 1000000000000;
+
+
+document.getElementById(
+"marketCap"
+).textContent =
+cap >= 1000000000
+
+? "$" +
+(cap / 1000000000)
+.toFixed(2) +
+"B"
+
+: "$" +
+(cap / 1000000)
+.toFixed(2) +
+"M";
+
+
+document.getElementById(
+"cash"
+).textContent =
+money(cash);
+
+
+document.getElementById(
+"banana"
+).textContent =
+Math.floor(bananas)
+.toLocaleString();
+
+
+const total =
+cash +
+bananas * price;
+
+
+document.getElementById(
+"portfolio"
+).textContent =
+money(total);
+
+
+const profit =
+total - 10000;
+
+
+const profitEl =
+document.getElementById(
+"profit"
+);
+
+
+profitEl.textContent =
+(profit >= 0 ? "+" : "") +
+money(profit);
+
+
+profitEl.style.color =
+profit >= 0
+? "#72e08b"
+: "#ff6b6b";
+
+}
+
+
+/* ==========================================
+   BUY
+========================================== */
+
+function buyBanana() {
+
+const amount =
+Number(
+document.getElementById(
+"buyAmount"
+).value
+);
+
+
+if(!amount || amount <= 0)
+return;
+
+
+socket.send(
+JSON.stringify({
+type: "buy",
+amount: amount
+})
+);
+
+}
+
+
+/* ==========================================
+   SELL
+========================================== */
+
+function sellBanana() {
+
+const amount =
+Number(
+document.getElementById(
+"sellAmount"
+).value
+);
+
+
+if(!amount || amount <= 0)
+return;
+
+
+socket.send(
+JSON.stringify({
+type: "sell",
+amount: amount
+})
+);
+
+}
+
+
+/* ==========================================
+   QUICK BUTTONS
+========================================== */
+
+function setBuy(percent) {
+
+const max =
+cash / price;
+
+
+document.getElementById(
+"buyAmount"
+).value =
+Math.floor(
+max * percent
+);
+
+}
+
+
+function setSell(percent) {
+
+document.getElementById(
+"sellAmount"
+).value =
+Math.floor(
+bananas * percent
+);
+
+}
+
+
+/* ==========================================
+   NEWS
+========================================== */
+
+function addNews(text) {
+
+const news =
+document.getElementById(
+"news"
+);
+
+
+const item =
+document.createElement(
+"div"
+);
+
+
+item.className =
+"news-item";
+
+
+item.textContent =
+new Date()
+.toLocaleTimeString() +
+" — " +
+text;
+
+
+news.prepend(item);
+
+
+while(news.children.length > 10) {
+
+news.lastChild.remove();
+
+}
+
+}
+
+
+/* ==========================================
+   CANVAS
+========================================== */
+
+const canvas =
+document.getElementById(
+"chart"
+);
+
+const ctx =
+canvas.getContext("2d");
+
+
+function resizeCanvas() {
+
+const dpr =
+window.devicePixelRatio || 1;
+
+const rect =
+canvas.getBoundingClientRect();
+
+
+canvas.width =
+rect.width * dpr;
+
+canvas.height =
+rect.height * dpr;
+
+
+ctx.setTransform(
+dpr,
+0,
+0,
+dpr,
+0,
+0
+);
+
+}
+
+
+window.addEventListener(
+"resize",
+() => {
+
+resizeCanvas();
+
+draw();
+
+});
+
+
+function draw() {
+
+const w =
+canvas.clientWidth;
+
+const h =
+canvas.clientHeight;
+
+
+ctx.clearRect(
+0,
+0,
+w,
+h
+);
+
+
+if(history.length < 2)
+return;
+
+
+const pad = {
+
+left: 70,
+right: 20,
+top: 25,
+bottom: 40
+
+};
+
+
+const cw =
+w -
+pad.left -
+pad.right;
+
+
+const ch =
+h -
+pad.top -
+pad.bottom;
+
+
+const min =
+Math.min(...history);
+
+const max =
+Math.max(...history);
+
+
+const range =
+Math.max(
+max - min,
+max * .01
+);
+
+
+/* GRID */
+
+ctx.strokeStyle =
+"#222733";
+
+ctx.fillStyle =
+"#737b8b";
+
+ctx.font =
+"12px Arial";
+
+
+for(let i=0;i<=5;i++) {
+
+const y =
+pad.top +
+ch * i / 5;
+
+
+ctx.beginPath();
+
+ctx.moveTo(
+pad.left,
+y
+);
+
+ctx.lineTo(
+w - pad.right,
+y
+);
+
+ctx.stroke();
+
+
+const value =
+max -
+range * i / 5;
+
+
+ctx.fillText(
+priceFormat(value),
+8,
+y + 4
+);
+
+}
+
+
+/* LINE */
+
+ctx.beginPath();
+
+
+history.forEach(
+(p,i) => {
+
+const x =
+pad.left +
+i /
+(history.length - 1)
+* cw;
+
+
+const y =
+pad.top +
+(max - p) /
+range *
+ch;
+
+
+if(i === 0)
+ctx.moveTo(x,y);
+else
+ctx.lineTo(x,y);
+
+});
+
+
+ctx.lineWidth = 3;
+
+ctx.strokeStyle =
+price >= history[0]
+? "#72e08b"
+: "#ff6b6b";
+
+ctx.stroke();
+
+
+/* DOT */
+
+const x =
+w - pad.right;
+
+
+const y =
+pad.top +
+(max - price) /
+range *
+ch;
+
+
+ctx.beginPath();
+
+ctx.arc(
+x,
+y,
+5,
+0,
+Math.PI * 2
+);
+
+ctx.fillStyle =
+ctx.strokeStyle;
+
+ctx.fill();
+
+
+}
+
+
+/* ==========================================
+   START
+========================================== */
+
+resizeCanvas();
+
+updateUI();
+
+</script>
+
+</body>
+</html>
