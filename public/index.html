@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>🍌 Banana Coin Exchange</title>
 
@@ -13,222 +19,846 @@
 }
 
 body {
+
     margin: 0;
-    background: #080a0f;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #151b29,
+            #080a0f 55%
+        );
+
     color: #f2f4f8;
-    font-family: Arial, sans-serif;
+
+    font-family:
+        Arial,
+        sans-serif;
 }
 
-.app {
-    width: min(1200px, 94vw);
-    margin: auto;
-    padding: 25px 0 40px;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-
-h1 {
-    margin: 0;
-    font-size: 38px;
-}
-
-.ticker {
-    color: #8d95a5;
-    margin-top: 5px;
-}
-
-.price-box {
-    text-align: right;
-}
-
-#price {
-    font-size: 32px;
-    font-weight: bold;
-}
-
-#change {
-    font-weight: bold;
-}
-
-.card {
-    background: #12151c;
-    border: 1px solid #272c37;
-    border-radius: 18px;
-    padding: 18px;
-    margin-bottom: 15px;
-}
-
-canvas {
-    width: 100%;
-    height: 500px;
-    display: block;
-    background: #0d1016;
-    border-radius: 12px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 14px;
-}
-
-.stat {
-    background: #0d1016;
-    border: 1px solid #252a35;
-    border-radius: 12px;
-    padding: 14px;
-}
-
-.label {
-    color: #8d95a5;
-    font-size: 12px;
-}
-
-.value {
-    margin-top: 5px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.big {
-    font-size: 22px;
-}
-
-.trade {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.trade-box {
-    background: #0d1016;
-    border: 1px solid #252a35;
-    border-radius: 14px;
-    padding: 18px;
-}
-
+button,
 input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    background: #171b24;
-    border: 1px solid #303746;
-    border-radius: 8px;
-    color: white;
-    font-size: 16px;
+
+    font-family: inherit;
+
 }
 
 button {
-    width: 100%;
-    padding: 12px;
-    border: 0;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
+
     cursor: pointer;
-    font-size: 15px;
+
+}
+
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+#loginScreen {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+}
+
+.loginBox {
+
+    width: min(
+        430px,
+        95vw
+    );
+
+    background: #12151c;
+
+    border:
+        1px solid
+        #303746;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.45);
+
+}
+
+.loginLogo {
+
+    text-align: center;
+
+    font-size: 55px;
+
+}
+
+.loginTitle {
+
+    text-align: center;
+
+    font-size: 30px;
+
+    font-weight: bold;
+
     margin-top: 5px;
+
+}
+
+.loginSubtitle {
+
+    text-align: center;
+
+    color: #8d95a5;
+
+    margin-bottom: 25px;
+
+}
+
+.loginBox input {
+
+    width: 100%;
+
+    padding: 13px;
+
+    margin: 7px 0;
+
+    background: #171b24;
+
+    border:
+        1px solid
+        #303746;
+
+    border-radius: 9px;
+
+    color: white;
+
+    font-size: 15px;
+
+    outline: none;
+
+}
+
+.loginBox input:focus {
+
+    border-color: #72e08b;
+
+}
+
+.loginButton {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: #238636;
+
+    color: white;
+
+    font-weight: bold;
+
+    margin-top: 10px;
+
+}
+
+.registerButton {
+
+    background: #303746;
+
+}
+
+.fakeWarning {
+
+    margin-top: 18px;
+
+    padding: 12px;
+
+    background: #211d0c;
+
+    border:
+        1px solid
+        #665300;
+
+    border-radius: 9px;
+
+    color: #d6c56a;
+
+    font-size: 13px;
+
+    text-align: center;
+
+}
+
+.loginError {
+
+    color: #ff6b6b;
+
+    text-align: center;
+
+    min-height: 20px;
+
+    margin-top: 10px;
+
+}
+
+
+/* ==========================================
+   APP
+========================================== */
+
+#app {
+
+    display: none;
+
+}
+
+.app {
+
+    width:
+        min(
+            1250px,
+            94vw
+        );
+
+    margin: auto;
+
+    padding:
+        25px 0 40px;
+
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-bottom: 18px;
+
+}
+
+h1 {
+
+    margin: 0;
+
+    font-size: 38px;
+
+}
+
+.ticker {
+
+    color: #8d95a5;
+
+    margin-top: 5px;
+
+}
+
+.price-box {
+
+    text-align: right;
+
+}
+
+#price {
+
+    font-size: 32px;
+
+    font-weight: bold;
+
+}
+
+#change {
+
+    font-weight: bold;
+
+}
+
+.accountBadge {
+
+    margin-top: 7px;
+
+    color: #72e08b;
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================================
+   CARDS
+========================================== */
+
+.card {
+
+    background: #12151c;
+
+    border:
+        1px solid
+        #272c37;
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    margin-bottom: 15px;
+
+}
+
+
+/* ==========================================
+   CHART
+========================================== */
+
+canvas {
+
+    width: 100%;
+
+    height: 500px;
+
+    display: block;
+
+    background: #0d1016;
+
+    border-radius: 12px;
+
+}
+
+
+/* ==========================================
+   STATS
+========================================== */
+
+.grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            1fr
+        );
+
+    gap: 12px;
+
+    margin-top: 14px;
+
+}
+
+.stat {
+
+    background: #0d1016;
+
+    border:
+        1px solid
+        #252a35;
+
+    border-radius: 12px;
+
+    padding: 14px;
+
+}
+
+.label {
+
+    color: #8d95a5;
+
+    font-size: 12px;
+
+}
+
+.value {
+
+    margin-top: 5px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+.big {
+
+    font-size: 22px;
+
+}
+
+
+/* ==========================================
+   TRADING
+========================================== */
+
+.trade {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 15px;
+
+}
+
+.trade-box {
+
+    background: #0d1016;
+
+    border:
+        1px solid
+        #252a35;
+
+    border-radius: 14px;
+
+    padding: 18px;
+
+}
+
+input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin: 8px 0;
+
+    background: #171b24;
+
+    border:
+        1px solid
+        #303746;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 16px;
+
+}
+
+button {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    margin-top: 5px;
+
 }
 
 button:hover {
-    filter: brightness(1.15);
+
+    filter:
+        brightness(1.15);
+
 }
 
 .buy {
+
     background: #238636;
+
 }
 
 .sell {
+
     background: #c93c3c;
+
 }
 
-.event {
-    background: #9b6b00;
+.logout {
+
+    background: #303746;
+
+    width: auto;
+
+    padding:
+        8px 14px;
+
+    font-size: 12px;
+
 }
 
 .quick {
+
     display: flex;
+
     gap: 6px;
+
 }
 
 .quick button {
+
     background: #252b36;
+
     font-size: 12px;
+
 }
 
+
+/* ==========================================
+   TWO COLUMN
+========================================== */
+
+.twoColumn {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 15px;
+
+}
+
+
+/* ==========================================
+   NEWS
+========================================== */
+
 .news {
-    max-height: 220px;
+
+    max-height: 260px;
+
     overflow: hidden;
+
 }
 
 .news-item {
+
     padding: 9px;
-    border-bottom: 1px solid #222733;
+
+    border-bottom:
+        1px solid
+        #222733;
+
     font-size: 14px;
+
 }
 
-.warning {
-    text-align: center;
-    color: #737b8b;
+
+/* ==========================================
+   LEADERBOARD
+========================================== */
+
+.leaderboard {
+
+    max-height: 350px;
+
+    overflow-y: auto;
+
+}
+
+.leaderRow {
+
+    display: grid;
+
+    grid-template-columns:
+        45px
+        1fr
+        130px;
+
+    gap: 10px;
+
+    padding: 11px;
+
+    border-bottom:
+        1px solid
+        #222733;
+
+    align-items: center;
+
+}
+
+.rank {
+
+    font-weight: bold;
+
+}
+
+.traderName {
+
+    font-weight: bold;
+
+}
+
+.portfolioValue {
+
+    text-align: right;
+
+    font-weight: bold;
+
+}
+
+.you {
+
+    color: #72e08b;
+
+}
+
+
+/* ==========================================
+   ACHIEVEMENTS
+========================================== */
+
+.achievement {
+
+    background: #0d1016;
+
+    border:
+        1px solid
+        #252a35;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    margin-bottom: 8px;
+
+}
+
+.achievement.locked {
+
+    opacity: .35;
+
+}
+
+.achievementName {
+
+    font-weight: bold;
+
+}
+
+.achievementDescription {
+
+    color: #8d95a5;
+
     font-size: 12px;
+
+    margin-top: 3px;
+
+}
+
+
+/* ==========================================
+   WARNING
+========================================== */
+
+.warning {
+
+    text-align: center;
+
+    color: #737b8b;
+
+    font-size: 12px;
+
     margin-top: 15px;
+
 }
 
 #players {
+
     color: #72e08b;
+
     font-weight: bold;
+
 }
+
+
+/* ==========================================
+   MOBILE
+========================================== */
 
 @media(max-width:750px) {
 
     header {
-        flex-direction: column;
-        align-items: flex-start;
+
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
         gap: 12px;
+
     }
 
     .price-box {
-        text-align: left;
+
+        text-align:
+            left;
+
     }
 
     .grid {
-        grid-template-columns: repeat(2, 1fr);
+
+        grid-template-columns:
+            repeat(
+                2,
+                1fr
+            );
+
     }
 
-    .trade {
-        grid-template-columns: 1fr;
+    .trade,
+    .twoColumn {
+
+        grid-template-columns:
+            1fr;
+
     }
 
     canvas {
+
         height: 400px;
+
     }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
+
+<!-- ========================================
+     LOGIN SCREEN
+======================================== -->
+
+<div id="loginScreen">
+
+<div class="loginBox">
+
+<div class="loginLogo">
+🍌
+</div>
+
+<div class="loginTitle">
+Banana Coin
+</div>
+
+<div class="loginSubtitle">
+Centralized fictional exchange
+</div>
+
+
+<input
+    id="username"
+    placeholder="Username"
+    maxlength="20"
+>
+
+
+<input
+    id="email"
+    type="email"
+    placeholder="Fake email"
+>
+
+
+<input
+    id="password"
+    type="password"
+    placeholder="Fake password"
+>
+
+
+<button
+    class="loginButton"
+    onclick="register()"
+>
+CREATE ACCOUNT
+</button>
+
+
+<button
+    class="loginButton registerButton"
+    onclick="login()"
+>
+LOG IN
+</button>
+
+
+<div
+    id="loginError"
+    class="loginError"
+></div>
+
+
+<div class="fakeWarning">
+
+⚠️ <b>Don't use your real email or password lmao.</b>
+
+<br><br>
+
+This is a fictional game account.
+No real cryptocurrency or money is involved.
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ========================================
+     MAIN APP
+======================================== -->
+
+<div id="app">
+
 <div class="app">
+
 
 <header>
 
 <div>
 
-<h1>🍌 Banana Coin</h1>
+<h1>
+🍌 Banana Coin
+</h1>
 
 <div class="ticker">
 BANANA • FICTIONAL CENTRALIZED MARKET
 </div>
 
+<div
+    id="accountBadge"
+    class="accountBadge"
+>
+Not logged in
 </div>
+
+</div>
+
 
 <div class="price-box">
 
@@ -240,16 +870,37 @@ $0.00004269
 +0.00%
 </div>
 
+<div>
+
+👥
+<span id="players">
+0
+</span>
+online
+
+</div>
+
+<button
+    class="logout"
+    onclick="logout()"
+>
+LOG OUT
+</button>
+
 </div>
 
 </header>
 
 
+<!-- CHART -->
+
 <div class="card">
 
 <canvas id="chart"></canvas>
 
+
 <div class="grid">
+
 
 <div class="stat">
 
@@ -257,7 +908,10 @@ $0.00004269
 Market Cap
 </div>
 
-<div class="value" id="marketCap">
+<div
+    class="value"
+    id="marketCap"
+>
 $42.69M
 </div>
 
@@ -270,7 +924,10 @@ $42.69M
 24h High
 </div>
 
-<div class="value" id="high">
+<div
+    class="value"
+    id="high"
+>
 —
 </div>
 
@@ -283,7 +940,10 @@ $42.69M
 24h Low
 </div>
 
-<div class="value" id="low">
+<div
+    class="value"
+    id="low"
+>
 —
 </div>
 
@@ -296,22 +956,32 @@ $42.69M
 Online Traders
 </div>
 
-<div class="value" id="players">
-1
+<div
+    class="value"
+    id="players2"
+>
+0
 </div>
+
+</div>
+
 
 </div>
 
 </div>
 
-</div>
 
+<!-- PORTFOLIO -->
 
 <div class="card">
 
-<h2>💼 Your Portfolio</h2>
+<h2>
+💼 Your Portfolio
+</h2>
+
 
 <div class="grid">
+
 
 <div class="stat">
 
@@ -319,7 +989,10 @@ Online Traders
 Fake Cash
 </div>
 
-<div class="value big" id="cash">
+<div
+    class="value big"
+    id="cash"
+>
 $10,000.00
 </div>
 
@@ -332,7 +1005,10 @@ $10,000.00
 BANANA Owned
 </div>
 
-<div class="value big" id="banana">
+<div
+    class="value big"
+    id="banana"
+>
 0
 </div>
 
@@ -345,7 +1021,10 @@ BANANA Owned
 Portfolio Value
 </div>
 
-<div class="value big" id="portfolio">
+<div
+    class="value big"
+    id="portfolio"
+>
 $10,000.00
 </div>
 
@@ -358,54 +1037,74 @@ $10,000.00
 Profit / Loss
 </div>
 
-<div class="value big" id="profit">
+<div
+    class="value big"
+    id="profit"
+>
 $0.00
 </div>
 
 </div>
 
-</div>
 
 </div>
 
+</div>
+
+
+<!-- TRADING -->
 
 <div class="card">
 
-<h2>💱 Trade BANANA</h2>
+<h2>
+💱 Trade BANANA
+</h2>
+
 
 <div class="trade">
 
 
 <div class="trade-box">
 
-<h2>🟢 Buy</h2>
+<h2>
+🟢 Buy
+</h2>
+
 
 <input
-id="buyAmount"
-type="number"
-min="0"
-placeholder="Amount of BANANA"
+    id="buyAmount"
+    type="number"
+    min="0"
+    placeholder="Amount of BANANA"
 >
+
 
 <div class="quick">
 
-<button onclick="setBuy(.25)">
+<button
+    onclick="setBuy(.25)"
+>
 25%
 </button>
 
-<button onclick="setBuy(.5)">
+<button
+    onclick="setBuy(.5)"
+>
 50%
 </button>
 
-<button onclick="setBuy(1)">
+<button
+    onclick="setBuy(1)"
+>
 MAX
 </button>
 
 </div>
 
+
 <button
-class="buy"
-onclick="buyBanana()"
+    class="buy"
+    onclick="buyBanana()"
 >
 BUY BANANA
 </button>
@@ -415,40 +1114,73 @@ BUY BANANA
 
 <div class="trade-box">
 
-<h2>🔴 Sell</h2>
+<h2>
+🔴 Sell
+</h2>
+
 
 <input
-id="sellAmount"
-type="number"
-min="0"
-placeholder="Amount of BANANA"
+    id="sellAmount"
+    type="number"
+    min="0"
+    placeholder="Amount of BANANA"
 >
+
 
 <div class="quick">
 
-<button onclick="setSell(.25)">
+<button
+    onclick="setSell(.25)"
+>
 25%
 </button>
 
-<button onclick="setSell(.5)">
+<button
+    onclick="setSell(.5)"
+>
 50%
 </button>
 
-<button onclick="setSell(1)">
+<button
+    onclick="setSell(1)"
+>
 MAX
 </button>
 
 </div>
 
+
 <button
-class="sell"
-onclick="sellBanana()"
+    class="sell"
+    onclick="sellBanana()"
 >
 SELL BANANA
 </button>
 
 </div>
 
+
+</div>
+
+</div>
+
+
+<!-- LEADERBOARD + ACHIEVEMENTS -->
+
+<div class="twoColumn">
+
+
+<div class="card">
+
+<h2>
+🏆 Leaderboard
+</h2>
+
+<div
+    id="leaderboard"
+    class="leaderboard"
+>
+No traders yet.
 </div>
 
 </div>
@@ -456,12 +1188,34 @@ SELL BANANA
 
 <div class="card">
 
-<h2>📰 Banana News</h2>
+<h2>
+🎖️ Achievements
+</h2>
 
 <div
-id="news"
-class="news"
-></div>
+    id="achievements"
+>
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- NEWS -->
+
+<div class="card">
+
+<h2>
+📰 Banana News
+</h2>
+
+<div
+    id="news"
+    class="news"
+>
+</div>
 
 </div>
 
@@ -473,177 +1227,518 @@ No real cryptocurrency or money is involved.
 
 </div>
 
+
+</div>
+
 </div>
 
 
 <script>
 
-/* ==========================================
-   CONNECT TO SERVER
-========================================== */
-
-const protocol =
-location.protocol === "https:"
-? "wss:"
-: "ws:";
-
-const socket =
-new WebSocket(
-protocol + "//" + location.host
-);
-
 
 /* ==========================================
-   MARKET DATA
+   GLOBAL VARIABLES
 ========================================== */
 
-let price = 0.00004269;
+let token =
+    localStorage.getItem(
+        "bananaToken"
+    );
 
-let startingPrice = price;
+let username = "";
+
+let price =
+    0.00004269;
+
+let startingPrice =
+    price;
+
+let cash =
+    10000;
+
+let bananas =
+    0;
 
 let history = [];
 
 
 /* ==========================================
-   PLAYER DATA
+   ACHIEVEMENTS
 ========================================== */
 
-let cash = 10000;
+const ACHIEVEMENTS = {
 
-let bananas = 0;
+    firstBanana: {
+        name:
+            "🍌 First Banana",
+        description:
+            "Buy your first BANANA"
+    },
+
+    bananaWhale: {
+        name:
+            "🐋 Banana Whale",
+        description:
+            "Own 1,000,000 BANANA"
+    },
+
+    millionaire: {
+        name:
+            "💰 Banana Millionaire",
+        description:
+            "Reach $1,000,000"
+    },
+
+    diamondHands: {
+        name:
+            "💎 Diamond Hands",
+        description:
+            "Survive a 50% market crash"
+    },
+
+    profit100: {
+        name:
+            "📈 To The Moon",
+        description:
+            "Make 100% profit"
+    },
+
+    financialDisaster: {
+        name:
+            "💀 Financial Disaster",
+        description:
+            "Lose 50% of your starting portfolio"
+    }
+
+};
+
+
+/* ==========================================
+   LOGIN API
+========================================== */
+
+async function register() {
+
+    const usernameInput =
+        document.getElementById(
+            "username"
+        ).value.trim();
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    setLoginError("");
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/register",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                usernameInput,
+
+                            email:
+                                email,
+
+                            password:
+                                password
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            setLoginError(
+                data.error ||
+                "Registration failed."
+            );
+
+            return;
+
+        }
+
+
+        token =
+            data.token;
+
+        localStorage.setItem(
+            "bananaToken",
+            token
+        );
+
+
+        connectSocket();
+
+    } catch {
+
+        setLoginError(
+            "Could not reach Banana Coin server."
+        );
+
+    }
+
+}
+
+
+async function login() {
+
+    const usernameInput =
+        document.getElementById(
+            "username"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    setLoginError("");
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/login",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                usernameInput,
+
+                            password:
+                                password
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            setLoginError(
+                data.error ||
+                "Login failed."
+            );
+
+            return;
+
+        }
+
+
+        token =
+            data.token;
+
+        localStorage.setItem(
+            "bananaToken",
+            token
+        );
+
+
+        connectSocket();
+
+    } catch {
+
+        setLoginError(
+            "Could not reach Banana Coin server."
+        );
+
+    }
+
+}
+
+
+function setLoginError(text) {
+
+    document.getElementById(
+        "loginError"
+    ).textContent =
+        text;
+
+}
+
+
+/* ==========================================
+   LOGOUT
+========================================== */
+
+function logout() {
+
+    localStorage.removeItem(
+        "bananaToken"
+    );
+
+    location.reload();
+
+}
 
 
 /* ==========================================
    SOCKET
 ========================================== */
 
-socket.onopen = () => {
-
-addNews(
-"🟢 Connected to Banana Coin server."
-);
-
-};
+let socket;
 
 
-socket.onclose = () => {
+function connectSocket() {
 
-addNews(
-"🔴 Disconnected from Banana Coin server."
-);
-
-};
-
-
-socket.onerror = () => {
-
-addNews(
-"⚠️ Server connection error."
-);
-
-};
+    const protocol =
+        location.protocol === "https:"
+            ? "wss:"
+            : "ws:";
 
 
-socket.onmessage = event => {
+    socket =
+        new WebSocket(
+            protocol +
+            "//" +
+            location.host
+        );
 
-const data =
-JSON.parse(event.data);
+
+    socket.onopen = () => {
+
+        socket.send(
+            JSON.stringify({
+
+                type:
+                    "authenticate",
+
+                token:
+                    token
+
+            })
+        );
 
 
-if(data.type === "welcome") {
+        showApp();
 
-price = data.price;
 
-startingPrice = price;
+        addNews(
+            "🟢 Connected to Banana Coin server."
+        );
 
-cash = data.cash;
+    };
 
-bananas = data.bananas;
+
+    socket.onclose = () => {
+
+        addNews(
+            "🔴 Disconnected from Banana Coin server."
+        );
+
+    };
+
+
+    socket.onerror = () => {
+
+        addNews(
+            "⚠️ Server connection error."
+        );
+
+    };
+
+
+    socket.onmessage =
+        event => {
+
+            const data =
+                JSON.parse(
+                    event.data
+                );
+
+
+            if (
+                data.type ===
+                "market"
+            ) {
+
+                price =
+                    data.price;
+
+                history.push(
+                    price
+                );
+
+
+                if (
+                    history.length >
+                    150
+                ) {
+
+                    history.shift();
+
+                }
+
+            }
+
+
+            if (
+                data.type ===
+                "portfolio"
+            ) {
+
+                username =
+                    data.username;
+
+                cash =
+                    data.cash;
+
+                bananas =
+                    data.bananas;
+
+
+                document.getElementById(
+                    "accountBadge"
+                ).textContent =
+                    "👤 " +
+                    username;
+
+
+                renderAchievements(
+                    data.achievements
+                );
+
+            }
+
+
+            if (
+                data.type ===
+                "players"
+            ) {
+
+                document.getElementById(
+                    "players"
+                ).textContent =
+                    data.count;
+
+                document.getElementById(
+                    "players2"
+                ).textContent =
+                    data.count;
+
+            }
+
+
+            if (
+                data.type ===
+                "trade"
+            ) {
+
+                addNews(
+                    data.message
+                );
+
+            }
+
+
+            if (
+                data.type ===
+                "achievement"
+            ) {
+
+                addNews(
+                    "🏆 Achievement unlocked: " +
+                    data.achievement.name
+                );
+
+            }
+
+
+            if (
+                data.type ===
+                "leaderboard"
+            ) {
+
+                renderLeaderboard(
+                    data.leaderboard
+                );
+
+            }
+
+
+            if (
+                data.type ===
+                "error"
+            ) {
+
+                alert(
+                    data.message
+                );
+
+            }
+
+
+            updateUI();
+
+            draw();
+
+        };
 
 }
-
-
-if(data.type === "market") {
-
-price = data.price;
-
-history.push(price);
-
-if(history.length > 150)
-history.shift();
-
-}
-
-
-if(data.type === "portfolio") {
-
-cash = data.cash;
-
-bananas = data.bananas;
-
-}
-
-
-if(data.type === "players") {
-
-document.getElementById(
-"players"
-).textContent =
-data.count;
-
-}
-
-
-if(data.type === "trade") {
-
-addNews(data.message);
-
-}
-
-
-if(data.type === "event") {
-
-addNews(data.message);
-
-}
-
-
-if(data.type === "error") {
-
-alert(data.message);
-
-}
-
-
-updateUI();
-
-draw();
-
-};
 
 
 /* ==========================================
-   FORMAT
+   SHOW APP
 ========================================== */
 
-function money(value) {
+function showApp() {
 
-return "$" +
-value.toLocaleString(
-"en-US",
-{
-minimumFractionDigits: 2,
-maximumFractionDigits: 2
-}
-);
-
-}
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "none";
 
 
-function priceFormat(value) {
-
-return "$" +
-value.toFixed(8);
+    document.getElementById(
+        "app"
+    ).style.display =
+        "block";
 
 }
 
@@ -652,211 +1747,300 @@ value.toFixed(8);
    UI
 ========================================== */
 
-function updateUI() {
+function money(value) {
 
-document.getElementById(
-"price"
-).textContent =
-priceFormat(price);
+    return "$" +
+        value.toLocaleString(
+            "en-US",
+            {
 
+                minimumFractionDigits:
+                    2,
 
-const change =
-(price / startingPrice - 1)
-* 100;
+                maximumFractionDigits:
+                    2
 
-
-const changeEl =
-document.getElementById(
-"change"
-);
-
-
-changeEl.textContent =
-(change >= 0 ? "+" : "") +
-change.toFixed(2) +
-"%";
-
-
-changeEl.style.color =
-change >= 0
-? "#72e08b"
-: "#ff6b6b";
-
-
-if(history.length) {
-
-const high =
-Math.max(...history);
-
-const low =
-Math.min(...history);
-
-
-document.getElementById(
-"high"
-).textContent =
-priceFormat(high);
-
-
-document.getElementById(
-"low"
-).textContent =
-priceFormat(low);
+            }
+        );
 
 }
 
 
-const cap =
-price * 1000000000000;
+function priceFormat(value) {
+
+    return "$" +
+        value.toFixed(8);
+
+}
 
 
-document.getElementById(
-"marketCap"
-).textContent =
-cap >= 1000000000
+function updateUI() {
 
-? "$" +
-(cap / 1000000000)
-.toFixed(2) +
-"B"
-
-: "$" +
-(cap / 1000000)
-.toFixed(2) +
-"M";
+    document.getElementById(
+        "price"
+    ).textContent =
+        priceFormat(
+            price
+        );
 
 
-document.getElementById(
-"cash"
-).textContent =
-money(cash);
+    const change =
+        (
+            price /
+            startingPrice -
+            1
+        ) * 100;
 
 
-document.getElementById(
-"banana"
-).textContent =
-Math.floor(bananas)
-.toLocaleString();
+    const changeEl =
+        document.getElementById(
+            "change"
+        );
 
 
-const total =
-cash +
-bananas * price;
+    changeEl.textContent =
+        (
+            change >= 0
+                ? "+"
+                : ""
+        ) +
+        change.toFixed(2) +
+        "%";
 
 
-document.getElementById(
-"portfolio"
-).textContent =
-money(total);
+    changeEl.style.color =
+        change >= 0
+            ? "#72e08b"
+            : "#ff6b6b";
 
 
-const profit =
-total - 10000;
+    if (
+        history.length
+    ) {
+
+        const high =
+            Math.max(
+                ...history
+            );
+
+        const low =
+            Math.min(
+                ...history
+            );
 
 
-const profitEl =
-document.getElementById(
-"profit"
-);
+        document.getElementById(
+            "high"
+        ).textContent =
+            priceFormat(
+                high
+            );
 
 
-profitEl.textContent =
-(profit >= 0 ? "+" : "") +
-money(profit);
+        document.getElementById(
+            "low"
+        ).textContent =
+            priceFormat(
+                low
+            );
+
+    }
 
 
-profitEl.style.color =
-profit >= 0
-? "#72e08b"
-: "#ff6b6b";
+    const cap =
+        price *
+        1000000000000;
+
+
+    document.getElementById(
+        "marketCap"
+    ).textContent =
+
+        cap >= 1000000000
+
+            ? "$" +
+              (
+                  cap /
+                  1000000000
+              ).toFixed(2) +
+              "B"
+
+            : "$" +
+              (
+                  cap /
+                  1000000
+              ).toFixed(2) +
+              "M";
+
+
+    document.getElementById(
+        "cash"
+    ).textContent =
+        money(cash);
+
+
+    document.getElementById(
+        "banana"
+    ).textContent =
+        Math.floor(
+            bananas
+        ).toLocaleString();
+
+
+    const total =
+        cash +
+        bananas * price;
+
+
+    document.getElementById(
+        "portfolio"
+    ).textContent =
+        money(total);
+
+
+    const profit =
+        total -
+        10000;
+
+
+    const profitEl =
+        document.getElementById(
+            "profit"
+        );
+
+
+    profitEl.textContent =
+        (
+            profit >= 0
+                ? "+"
+                : ""
+        ) +
+        money(profit);
+
+
+    profitEl.style.color =
+        profit >= 0
+            ? "#72e08b"
+            : "#ff6b6b";
 
 }
 
 
 /* ==========================================
-   BUY
+   TRADING
 ========================================== */
 
 function buyBanana() {
 
-const amount =
-Number(
-document.getElementById(
-"buyAmount"
-).value
-);
+    if (
+        !socket ||
+        socket.readyState !==
+        WebSocket.OPEN
+    ) {
+        return;
+    }
 
 
-if(!amount || amount <= 0)
-return;
+    const amount =
+        Number(
+            document.getElementById(
+                "buyAmount"
+            ).value
+        );
 
 
-socket.send(
-JSON.stringify({
-type: "buy",
-amount: amount
-})
-);
+    if (
+        !amount ||
+        amount <= 0
+    ) {
+        return;
+    }
+
+
+    socket.send(
+        JSON.stringify({
+
+            type:
+                "buy",
+
+            amount:
+                amount
+
+        })
+    );
 
 }
 
-
-/* ==========================================
-   SELL
-========================================== */
 
 function sellBanana() {
 
-const amount =
-Number(
-document.getElementById(
-"sellAmount"
-).value
-);
+    if (
+        !socket ||
+        socket.readyState !==
+        WebSocket.OPEN
+    ) {
+        return;
+    }
 
 
-if(!amount || amount <= 0)
-return;
+    const amount =
+        Number(
+            document.getElementById(
+                "sellAmount"
+            ).value
+        );
 
 
-socket.send(
-JSON.stringify({
-type: "sell",
-amount: amount
-})
-);
+    if (
+        !amount ||
+        amount <= 0
+    ) {
+        return;
+    }
+
+
+    socket.send(
+        JSON.stringify({
+
+            type:
+                "sell",
+
+            amount:
+                amount
+
+        })
+    );
 
 }
 
 
-/* ==========================================
-   QUICK BUTTONS
-========================================== */
-
 function setBuy(percent) {
 
-const max =
-cash / price;
+    const max =
+        cash /
+        price;
 
 
-document.getElementById(
-"buyAmount"
-).value =
-Math.floor(
-max * percent
-);
+    document.getElementById(
+        "buyAmount"
+    ).value =
+        Math.floor(
+            max *
+            percent
+        );
 
 }
 
 
 function setSell(percent) {
 
-document.getElementById(
-"sellAmount"
-).value =
-Math.floor(
-bananas * percent
-);
+    document.getElementById(
+        "sellAmount"
+    ).value =
+        Math.floor(
+            bananas *
+            percent
+        );
 
 }
 
@@ -867,37 +2051,260 @@ bananas * percent
 
 function addNews(text) {
 
-const news =
-document.getElementById(
-"news"
-);
+    const news =
+        document.getElementById(
+            "news"
+        );
 
 
-const item =
-document.createElement(
-"div"
-);
+    const item =
+        document.createElement(
+            "div"
+        );
 
 
-item.className =
-"news-item";
+    item.className =
+        "news-item";
 
 
-item.textContent =
-new Date()
-.toLocaleTimeString() +
-" — " +
-text;
+    item.textContent =
+        new Date()
+            .toLocaleTimeString() +
+        " — " +
+        text;
 
 
-news.prepend(item);
+    news.prepend(
+        item
+    );
 
 
-while(news.children.length > 10) {
+    while (
+        news.children.length >
+        15
+    ) {
 
-news.lastChild.remove();
+        news.lastChild.remove();
+
+    }
 
 }
+
+
+/* ==========================================
+   LEADERBOARD
+========================================== */
+
+function renderLeaderboard(
+    leaderboard
+) {
+
+    const container =
+        document.getElementById(
+            "leaderboard"
+        );
+
+
+    if (
+        !leaderboard.length
+    ) {
+
+        container.textContent =
+            "No traders yet.";
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    leaderboard.forEach(
+        (player, index) => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "leaderRow";
+
+
+            const rank =
+                document.createElement(
+                    "div"
+                );
+
+
+            rank.className =
+                "rank";
+
+
+            rank.textContent =
+                "#" +
+                (index + 1);
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "traderName";
+
+
+            name.textContent =
+                player.username;
+
+
+            if (
+                player.username ===
+                username
+            ) {
+
+                name.classList.add(
+                    "you"
+                );
+
+            }
+
+
+            const value =
+                document.createElement(
+                    "div"
+                );
+
+
+            value.className =
+                "portfolioValue";
+
+
+            value.textContent =
+                money(
+                    player.portfolio
+                );
+
+
+            row.appendChild(
+                rank
+            );
+
+            row.appendChild(
+                name
+            );
+
+            row.appendChild(
+                value
+            );
+
+
+            container.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   ACHIEVEMENTS
+========================================== */
+
+function renderAchievements(
+    unlocked
+) {
+
+    const container =
+        document.getElementById(
+            "achievements"
+        );
+
+
+    container.innerHTML = "";
+
+
+    Object.entries(
+        ACHIEVEMENTS
+    ).forEach(
+        ([id, achievement]) => {
+
+            const box =
+                document.createElement(
+                    "div"
+                );
+
+
+            const isUnlocked =
+                unlocked &&
+                unlocked.includes(
+                    id
+                );
+
+
+            box.className =
+                "achievement" +
+                (
+                    isUnlocked
+                        ? ""
+                        : " locked"
+                );
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "achievementName";
+
+
+            name.textContent =
+                (
+                    isUnlocked
+                        ? "✅ "
+                        : "🔒 "
+                ) +
+                achievement.name;
+
+
+            const description =
+                document.createElement(
+                    "div"
+                );
+
+
+            description.className =
+                "achievementDescription";
+
+
+            description.textContent =
+                achievement.description;
+
+
+            box.appendChild(
+                name
+            );
+
+            box.appendChild(
+                description
+            );
+
+
+            container.appendChild(
+                box
+            );
+
+        }
+    );
 
 }
 
@@ -907,226 +2314,282 @@ news.lastChild.remove();
 ========================================== */
 
 const canvas =
-document.getElementById(
-"chart"
-);
+    document.getElementById(
+        "chart"
+    );
+
 
 const ctx =
-canvas.getContext("2d");
+    canvas.getContext(
+        "2d"
+    );
 
 
 function resizeCanvas() {
 
-const dpr =
-window.devicePixelRatio || 1;
-
-const rect =
-canvas.getBoundingClientRect();
+    const dpr =
+        window.devicePixelRatio ||
+        1;
 
 
-canvas.width =
-rect.width * dpr;
-
-canvas.height =
-rect.height * dpr;
+    const rect =
+        canvas.getBoundingClientRect();
 
 
-ctx.setTransform(
-dpr,
-0,
-0,
-dpr,
-0,
-0
-);
+    canvas.width =
+        rect.width *
+        dpr;
+
+
+    canvas.height =
+        rect.height *
+        dpr;
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
 
 }
 
 
 window.addEventListener(
-"resize",
-() => {
+    "resize",
+    () => {
 
-resizeCanvas();
+        resizeCanvas();
 
-draw();
+        draw();
 
-});
+    }
+);
 
 
 function draw() {
 
-const w =
-canvas.clientWidth;
-
-const h =
-canvas.clientHeight;
+    const w =
+        canvas.clientWidth;
 
 
-ctx.clearRect(
-0,
-0,
-w,
-h
-);
+    const h =
+        canvas.clientHeight;
 
 
-if(history.length < 2)
-return;
+    ctx.clearRect(
+        0,
+        0,
+        w,
+        h
+    );
 
 
-const pad = {
-
-left: 70,
-right: 20,
-top: 25,
-bottom: 40
-
-};
+    if (
+        history.length < 2
+    ) {
+        return;
+    }
 
 
-const cw =
-w -
-pad.left -
-pad.right;
+    const pad = {
+
+        left: 70,
+
+        right: 20,
+
+        top: 25,
+
+        bottom: 40
+
+    };
 
 
-const ch =
-h -
-pad.top -
-pad.bottom;
+    const cw =
+        w -
+        pad.left -
+        pad.right;
 
 
-const min =
-Math.min(...history);
-
-const max =
-Math.max(...history);
-
-
-const range =
-Math.max(
-max - min,
-max * .01
-);
+    const ch =
+        h -
+        pad.top -
+        pad.bottom;
 
 
-/* GRID */
-
-ctx.strokeStyle =
-"#222733";
-
-ctx.fillStyle =
-"#737b8b";
-
-ctx.font =
-"12px Arial";
+    const min =
+        Math.min(
+            ...history
+        );
 
 
-for(let i=0;i<=5;i++) {
-
-const y =
-pad.top +
-ch * i / 5;
-
-
-ctx.beginPath();
-
-ctx.moveTo(
-pad.left,
-y
-);
-
-ctx.lineTo(
-w - pad.right,
-y
-);
-
-ctx.stroke();
+    const max =
+        Math.max(
+            ...history
+        );
 
 
-const value =
-max -
-range * i / 5;
+    const range =
+        Math.max(
+            max - min,
+            max * .01
+        );
 
 
-ctx.fillText(
-priceFormat(value),
-8,
-y + 4
-);
-
-}
+    ctx.strokeStyle =
+        "#222733";
 
 
-/* LINE */
-
-ctx.beginPath();
-
-
-history.forEach(
-(p,i) => {
-
-const x =
-pad.left +
-i /
-(history.length - 1)
-* cw;
+    ctx.fillStyle =
+        "#737b8b";
 
 
-const y =
-pad.top +
-(max - p) /
-range *
-ch;
+    ctx.font =
+        "12px Arial";
 
 
-if(i === 0)
-ctx.moveTo(x,y);
-else
-ctx.lineTo(x,y);
+    for (
+        let i = 0;
+        i <= 5;
+        i++
+    ) {
 
-});
-
-
-ctx.lineWidth = 3;
-
-ctx.strokeStyle =
-price >= history[0]
-? "#72e08b"
-: "#ff6b6b";
-
-ctx.stroke();
+        const y =
+            pad.top +
+            ch * i / 5;
 
 
-/* DOT */
+        ctx.beginPath();
 
-const x =
-w - pad.right;
+        ctx.moveTo(
+            pad.left,
+            y
+        );
+
+        ctx.lineTo(
+            w -
+            pad.right,
+            y
+        );
+
+        ctx.stroke();
 
 
-const y =
-pad.top +
-(max - price) /
-range *
-ch;
+        const value =
+            max -
+            range *
+            i /
+            5;
 
 
-ctx.beginPath();
+        ctx.fillText(
+            priceFormat(
+                value
+            ),
+            8,
+            y + 4
+        );
 
-ctx.arc(
-x,
-y,
-5,
-0,
-Math.PI * 2
-);
+    }
 
-ctx.fillStyle =
-ctx.strokeStyle;
 
-ctx.fill();
+    ctx.beginPath();
 
+
+    history.forEach(
+        (p, i) => {
+
+            const x =
+                pad.left +
+                i /
+                (
+                    history.length -
+                    1
+                ) *
+                cw;
+
+
+            const y =
+                pad.top +
+                (
+                    max -
+                    p
+                ) /
+                range *
+                ch;
+
+
+            if (
+                i === 0
+            ) {
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            } else {
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+    );
+
+
+    ctx.lineWidth =
+        3;
+
+
+    ctx.strokeStyle =
+        price >=
+        history[0]
+            ? "#72e08b"
+            : "#ff6b6b";
+
+
+    ctx.stroke();
+
+
+    const x =
+        w -
+        pad.right;
+
+
+    const y =
+        pad.top +
+        (
+            max -
+            price
+        ) /
+        range *
+        ch;
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        ctx.strokeStyle;
+
+
+    ctx.fill();
 
 }
 
@@ -1139,7 +2602,20 @@ resizeCanvas();
 
 updateUI();
 
+
+/*
+   If a token already exists,
+   attempt to reconnect automatically.
+*/
+
+if (token) {
+
+    connectSocket();
+
+}
+
 </script>
 
 </body>
+
 </html>
